@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS public.acc_com_groups
     name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     avatar character varying(255) COLLATE pg_catalog."default",
     chat_id bigint NOT NULL,
+    created_by bigint NOT NULL,
     is_active smallint NOT NULL DEFAULT '0'::smallint,
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone,
@@ -34,6 +35,10 @@ CREATE TABLE IF NOT EXISTS public.acc_com_groups
     CONSTRAINT acc_com_groups_chat_id_unique UNIQUE (chat_id),
     CONSTRAINT acc_com_groups_chat_id_foreign FOREIGN KEY (chat_id)
     REFERENCES public.acc_com_chats (id) MATCH SIMPLE
+                            ON UPDATE NO ACTION
+                            ON DELETE CASCADE,
+    CONSTRAINT acc_com_groups_created_by_foreign FOREIGN KEY (created_by)
+    REFERENCES public.users (id) MATCH SIMPLE
                             ON UPDATE NO ACTION
                             ON DELETE CASCADE
     );

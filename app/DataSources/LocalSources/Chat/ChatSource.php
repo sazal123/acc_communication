@@ -1,0 +1,88 @@
+<?php
+
+namespace App\DataSources\LocalSources\Chat;
+
+use App\Models\Chat\Chat;
+use App\Models\Chat\Group;
+use App\Models\Chat\Participant;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+
+class  ChatSource
+{
+    protected readonly Chat $chat;
+    protected  array $result;
+
+    public function __construct(Chat $chat)
+    {
+        $this->chat = $chat;
+    }
+
+    public function createChat($payload){
+        try{
+
+            if(isset($payload['participantId']) ) {
+                if($this->ifChatExist($payload['participantId'])){
+                    $this->result['added']=false;
+                }
+                else{
+                    $this->chat->uid=env('UID');
+                    $this->chat->udid=env('UDID');
+                    $this->chat->company_id=env('COMPANY_ID');
+                    $this->chat->save();
+                    $this->chat->users()->syncWithPivotValues([env('CURRENT_USER_ID'),$payload['participantId']],['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID')]);
+                    $this->result['added']=true;
+                }
+                return $this->result;
+
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function ifChatExist($participantId){
+        $user1Chats = Participant::where('user_id', env('CURRENT_USER_ID'))->pluck('chat_id')->all();
+        $commonChat = Participant::where('user_id', $participantId)
+            ->whereIn('chat_id', $user1Chats)
+            ->first();
+
+        return $commonChat;
+    }
+
+    public function createGroupChat($payload){
+        try{
+
+            if(isset($payload['participantIds']) && is_array($payload['participantIds']) ) {
+                $this->chat->uid=env('UID');
+                $this->chat->udid=env('UDID');
+                $this->chat->company_id=env('COMPANY_ID');
+                $this->chat->is_group=true;
+                $this->chat->save();
+                $participants=$payload['participantIds'];
+                array_push($participants,env('CURRENT_USER_ID'));
+                $this->chat->users()->syncWithPivotValues($participants,['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID')]);
+                $groupDetail = new Group();
+                $groupDetail->uid=env('UID');
+                $groupDetail->udid=env('UDID');
+                $groupDetail->company_id=env('COMPANY_ID');
+                $groupDetail->chat_id = $this->chat->id;
+                $groupDetail->name = $payload['group_name'];
+                $groupDetail->created_by = env('CURRENT_USER_ID'); // Assuming user authentication is in place
+                $groupDetail->save();
+                $this->result['added']=true;
+
+                return $this->result;
+
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+}
