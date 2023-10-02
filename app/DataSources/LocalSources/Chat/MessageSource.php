@@ -29,13 +29,19 @@ class  MessageSource
                 $this->message->udid=env('UDID');
                 $this->message->company_id=env('COMPANY_ID');
                 $chat=Chat::find($payload['chatId']);
-                $user=User::find(env('CURRENT_USER_ID'));
-                $this->message->content=$payload['content'];
-                $this->message->user()->associate($user);
-                $chat->messages()->save($this->message);
-                $chat->users()->updateExistingPivot(env('CURRENT_USER_ID'), ['is_active' => true]);
-                $this->broadcastMessage(env('CURRENT_USER_ID'),$payload['chatId'],$payload['content']);
-                $this->result['message']='message sent';
+                if($chat){
+                    $user=User::find(env('CURRENT_USER_ID'));
+                    $this->message->content=$payload['content'];
+                    $this->message->user()->associate($user);
+                    $chat->messages()->save($this->message);
+                    $chat->users()->updateExistingPivot(env('CURRENT_USER_ID'), ['is_active' => true]);
+                    $this->broadcastMessage(env('CURRENT_USER_ID'),$payload['chatId'],$payload['content']);
+                    $this->result['message']='message sent';
+                }
+                else{
+                    $this->result['message']='Chat id not found';
+                }
+
 
                 return $this->result;
 
