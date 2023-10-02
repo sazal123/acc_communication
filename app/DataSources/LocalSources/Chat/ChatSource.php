@@ -111,4 +111,33 @@ class  ChatSource
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }
+
+    public function deleteGroupChat($payload){
+        try{
+
+            if(isset($payload['chatId']) ) {
+                $chat = $this->chat::with('group')->find($payload['chatId']);
+                if($chat){
+                    if($chat->group->created_by==env('CURRENT_USER_ID')){
+                        $chat = $this->chat::find($payload['chatId']);
+                        $chat->delete();
+                        $this->result['message']='chat deleted';
+                    }
+                    else{
+                        $this->result['message']='permission error';
+                    }
+                }
+                else{
+                    $this->result['message']='chat id not found';
+                }
+                return $this->result;
+
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
 }
