@@ -14,16 +14,20 @@ use Illuminate\Queue\SerializesModels;
 class ChatEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public string $message;
-    public mixed $user;
+    public int $sender_id;
+    public mixed $message;
+    public array $participantIds;
+    public int $chat_id;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($message,User $user)
+    public function __construct($sender_id,$message,$participantIds,$chat_id)
     {
+        $this->sender_id=$sender_id;
         $this->message=$message;
-        $this->user=$user;
+        $this->participantIds=$participantIds;
+        $this->chat_id=$chat_id;
         $this->dontBroadcastToCurrentUser();
     }
 
@@ -35,7 +39,7 @@ class ChatEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('chat'),
+            new PrivateChannel('chat'.$this->chat_id)
         ];
     }
 }

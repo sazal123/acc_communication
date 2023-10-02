@@ -2,10 +2,12 @@
 
 namespace App\DataSources\LocalSources\Chat;
 
+use App\Events\ChatEvent;
 use App\Models\Chat\Chat;
 use App\Models\Chat\Message;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 
 class  MessageSource
@@ -31,6 +33,7 @@ class  MessageSource
                 $this->message->content=$payload['content'];
                 $this->message->user()->associate($user);
                 $chat->messages()->save($this->message);
+                $this->broadcastMessage(env('CURRENT_USER_ID'),$payload['chatId'],$payload['content']);
                 $this->result['added']=true;
 
                 return $this->result;
@@ -42,6 +45,15 @@ class  MessageSource
         }catch(Exception $e){
             throw new Exception($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function broadcastMessage($sender_id,$chat_id,$message){
+        $participantIds = DB::table('acc_com_participants')
+            ->where('chat_id', $chat_id)
+            ->where('user_id', '!=', $sender_id)
+            ->pluck('user_id')
+            ->toArray();
+        event(new ChatEvent($sender_id,$message,$participantIds,$chat_id));
     }
 
 }
