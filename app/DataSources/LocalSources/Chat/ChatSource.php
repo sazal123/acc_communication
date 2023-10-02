@@ -29,8 +29,9 @@ class  ChatSource
                     $this->chat->uid=env('UID');
                     $this->chat->udid=env('UDID');
                     $this->chat->company_id=env('COMPANY_ID');
+                    $this->chat->is_active=true;
                     $this->chat->save();
-                    $this->chat->users()->syncWithPivotValues([env('CURRENT_USER_ID'),$payload['participantId']],['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID')]);
+                    $this->chat->users()->syncWithPivotValues([env('CURRENT_USER_ID'),$payload['participantId']],['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID'),'is_active'=>true]);
                     $this->result['added']=true;
                 }
                 return $this->result;
@@ -61,20 +62,45 @@ class  ChatSource
                 $this->chat->udid=env('UDID');
                 $this->chat->company_id=env('COMPANY_ID');
                 $this->chat->is_group=true;
+                $this->chat->is_active=true;
                 $this->chat->save();
                 $participants=$payload['participantIds'];
                 array_push($participants,env('CURRENT_USER_ID'));
-                $this->chat->users()->syncWithPivotValues($participants,['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID')]);
+                $this->chat->users()->syncWithPivotValues($participants,['uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID'),'is_active'=>true]);
                 $groupDetail = new Group();
                 $groupDetail->uid=env('UID');
                 $groupDetail->udid=env('UDID');
                 $groupDetail->company_id=env('COMPANY_ID');
                 $groupDetail->chat_id = $this->chat->id;
+                $groupDetail->is_active = true;
                 $groupDetail->name = $payload['group_name'];
                 $groupDetail->created_by = env('CURRENT_USER_ID'); // Assuming user authentication is in place
                 $groupDetail->save();
                 $this->result['added']=true;
 
+                return $this->result;
+
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function deleteChat($payload){
+        try{
+
+            if(isset($payload['chatId']) ) {
+                $chat = $this->chat::find($payload['chatId']);
+                if($chat){
+                    $chat->users()->updateExistingPivot(env('CURRENT_USER_ID'), ['is_active' => false]);
+                    $this->result['message']='chat deleted';
+                }
+                else{
+                    $this->result['message']='chat id not found';
+                }
                 return $this->result;
 
 

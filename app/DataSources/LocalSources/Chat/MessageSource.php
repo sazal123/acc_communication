@@ -33,8 +33,9 @@ class  MessageSource
                 $this->message->content=$payload['content'];
                 $this->message->user()->associate($user);
                 $chat->messages()->save($this->message);
+                $chat->users()->updateExistingPivot(env('CURRENT_USER_ID'), ['is_active' => true]);
                 $this->broadcastMessage(env('CURRENT_USER_ID'),$payload['chatId'],$payload['content']);
-                $this->result['added']=true;
+                $this->result['message']='message sent';
 
                 return $this->result;
 
@@ -59,7 +60,7 @@ class  MessageSource
 
 
             }else{
-                throw new Exception('Read Exception has occurred.', 409);
+                throw new Exception('Read Exception has occurred.', 423);
             }
         }catch(Exception $e){
             throw new Exception($e->getMessage(), $e->getCode());

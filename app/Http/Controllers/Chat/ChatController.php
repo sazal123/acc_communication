@@ -5,6 +5,7 @@ use App\Events\ChatEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Chat\Chat\CreateChatRequest;
 use App\Http\Requests\Chat\Chat\CreateGroupChatRequest;
+use App\Http\Requests\Chat\Chat\DeleteChatRequest;
 use App\Models\User;
 use App\Repositories\Chat\ChatRepository;
 use Illuminate\Http\Request;
@@ -62,6 +63,29 @@ class ChatController extends Controller
                 function () {
                     $this->result['status'] = 200;
                     $this->result['data'] = $this->chatRepository->createGroupChat($this->payload);
+                });
+            if (!$executed) {
+                throw new Exception('Too many requests..', 429);
+            }
+        } catch (Exception $e) {
+            $this->result['status'] = $e->getCode();
+            $this->result['message'] = $e->getMessage();
+        }
+        return response()->json($this->result, $this->result['status']);
+
+    }
+
+    public function deleteChat(DeleteChatRequest $request){
+        try {
+            $this->communication['slug'] = 'delete-chat';
+            $this->communication['ip'] = $request->getClientIp();
+            $this->payload = $this->trimAndStrip($request->all());
+            $executed = RateLimiter::attempt(
+                $this->communication['slug'] . ':' . $this->communication['ip'],
+                $perMinute = env('API_REQUESTS_PER_MINUTE'),
+                function () {
+                    $this->result['status'] = 200;
+                    $this->result['data'] = $this->chatRepository->deleteChat($this->payload);
                 });
             if (!$executed) {
                 throw new Exception('Too many requests..', 429);
