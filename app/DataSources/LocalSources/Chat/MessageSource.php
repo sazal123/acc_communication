@@ -47,6 +47,25 @@ class  MessageSource
         }
     }
 
+    public function getMessage($payload){
+        try{
+
+            if(isset($payload['chatId']) ) {
+                $this->result = DB::table('acc_com_messages')
+                    ->where('chat_id', $payload['chatId'])
+                    ->get()
+                    ->toArray();
+                return $this->result;
+
+
+            }else{
+                throw new Exception('Read Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
     public function broadcastMessage($sender_id,$chat_id,$message){
         $participantIds = DB::table('acc_com_participants')
             ->where('chat_id', $chat_id)
