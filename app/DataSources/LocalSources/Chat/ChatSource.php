@@ -140,4 +140,23 @@ class  ChatSource
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }
+
+    public function getChat(){
+        try{
+            $userId=env('CURRENT_USER_ID');
+
+                $this->result = Chat::whereHas('users', function ($query) use ($userId) {
+                    $query->where('user_id', $userId)
+                        ->where('is_active', true);
+                })
+                ->with('group')
+                ->get()
+                ->toArray();
+                return $this->result;
+
+
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
 }

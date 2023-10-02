@@ -81,4 +81,17 @@ class ChatRepository implements ChatContract{
         }
         return responder()->success($this->response)->respond();
     }
+
+    public function getChat(){
+        DB::beginTransaction();
+        try {
+                $this->response = $this->chatSource->getChat();
+                DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+        return responder()->success($this->response)->respond();
+    }
 }

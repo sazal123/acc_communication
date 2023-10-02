@@ -24,11 +24,6 @@ class ChatController extends Controller
         $this->chatRepository=$chatRepository;
     }
 
-//    public function send(){
-//        $user= User::find(Auth::id());
-//        $message='ok';
-//        event(new ChatEvent($message,$user));
-//    }
     public function createChat(CreateChatRequest $request){
         try {
             $this->communication['slug'] = 'create-chat';
@@ -109,6 +104,29 @@ class ChatController extends Controller
                 function () {
                     $this->result['status'] = 200;
                     $this->result['data'] = $this->chatRepository->deleteGroupChat($this->payload);
+                });
+            if (!$executed) {
+                throw new Exception('Too many requests..', 429);
+            }
+        } catch (Exception $e) {
+            $this->result['status'] = $e->getCode();
+            $this->result['message'] = $e->getMessage();
+        }
+        return response()->json($this->result, $this->result['status']);
+
+    }
+
+    public function getChat(Request $request){
+        try {
+            $this->communication['slug'] = 'get-chat';
+            $this->communication['ip'] = $request->getClientIp();
+            $this->payload = $this->trimAndStrip($request->all());
+            $executed = RateLimiter::attempt(
+                $this->communication['slug'] . ':' . $this->communication['ip'],
+                $perMinute = env('API_REQUESTS_PER_MINUTE'),
+                function () {
+                    $this->result['status'] = 200;
+                    $this->result['data'] = $this->chatRepository->getChat();
                 });
             if (!$executed) {
                 throw new Exception('Too many requests..', 429);
