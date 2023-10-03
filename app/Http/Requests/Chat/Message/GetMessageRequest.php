@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Chat\Chat;
+namespace App\Http\Requests\Chat\Message;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class SendMessageRequest extends FormRequest
+class GetMessageRequest extends FormRequest
 {
     public function __construct()
     {
@@ -17,14 +17,12 @@ class SendMessageRequest extends FormRequest
     {
         return [
             'chatId' => 'required|integer',
-            'content' => 'required',
         ];
     }
     public function messages(): array
     {
         return [
             'chatId.required' =>  'Chat Id  is required.',
-            'content.required' =>  'Content  is required.',
         ];
     }
     public function failedValidation(Validator $validator)

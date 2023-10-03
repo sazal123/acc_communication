@@ -159,4 +159,85 @@ class  ChatSource
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }
+
+    public function adduserToChatChat($payload){
+        try{
+            if(isset($payload['chatId']) && isset($payload['userId']) ) {
+                $isGroup = $this->checkIsGroup($payload['chatId']);
+                if($isGroup){
+                    $permission=$this->checkPermissionForAddUserToChat($payload['chatId']);
+                    if($permission){
+                        $isUserExistInChat=$this->checkIsUserExistInChat($payload['chatId'],$payload['userId']);
+                        if($isUserExistInChat){
+                            $this->chat->users()->attach($payload['userId'],['chat_id'=>$payload['chatId'],'uid' => env('UID'),'udid' => env('UDID'),'company_id' => env('COMPANY_ID'),'is_active'=>true]);
+                            $this->result['message']='User added in chat';
+                        }
+                        else{
+                            $this->result['message']='User already in chat';
+                        }
+                    }
+                    else{
+                        $this->result['message']='Permission error';
+                    }
+                }
+                else{
+                    $this->result['message']='Not a group';
+                }
+                return $this->result;
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function checkIsGroup($chatId){
+        $chat=$this->chat::find($chatId);
+        if($chat){
+            if($chat->is_group==true){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function checkIsUserExistInChat($chatId,$userId){
+        $chatdata=$this->chat::find($chatId);
+        if($chatdata){
+            $chat=$this->chat->with('users')->find($chatId);
+            if ($chat->users->contains($userId)) {
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return false;
+        }
+
+    }
+    public function checkPermissionForAddUserToChat($chatId){
+        $chatdata=$this->chat::find($chatId);
+        if($chatdata){
+            $chat = $this->chat::with('group')->find($chatId);
+            if($chat->group->created_by==env('CURRENT_USER_ID')){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+
+    }
 }

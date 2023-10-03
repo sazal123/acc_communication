@@ -94,4 +94,20 @@ class ChatRepository implements ChatContract{
         }
         return responder()->success($this->response)->respond();
     }
+
+    public function addUserToChat($payload){
+
+        DB::beginTransaction();
+        try {
+            if(!empty($payload)) {
+                $this->response = $this->chatSource->adduserToChatChat($payload);
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+        return responder()->success($this->response)->respond();
+    }
 }

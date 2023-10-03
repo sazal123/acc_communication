@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Chat;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Chat\Chat\GetMessageRequest;
-use App\Http\Requests\Chat\Chat\SendMessageRequest;
+use App\Http\Requests\Chat\Message\GetMessageRequest;
+use App\Http\Requests\Chat\Message\SendMessageRequest;
 use App\Repositories\Chat\MessageRepository;
 use Illuminate\Support\Facades\RateLimiter;
 use Exception;

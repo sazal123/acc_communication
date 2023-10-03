@@ -8,4 +8,5 @@ interface ChatContract
     public function deleteChat($payload);
     public function deleteGroupChat($payload);
     public function getChat();
+    public function addUserToChat($payload);
 }
