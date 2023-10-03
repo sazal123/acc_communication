@@ -209,31 +209,18 @@ class  ChatSource
     }
 
     public function checkIsUserExistInChat($chatId,$userId){
-        $chatdata=$this->chat::find($chatId);
-        if($chatdata){
-            $chat=$this->chat->with('users')->find($chatId);
-            if ($chat->users->contains($userId)) {
-                return false;
-            }
-            else{
-                return true;
-            }
-        }
-        else{
+        $chat=$this->chat->with('users')->find($chatId);
+        if ($chat->users->contains($userId)) {
             return false;
         }
-
+        else{
+            return true;
+        }
     }
     public function checkPermissionForAddUserToChat($chatId){
-        $chatdata=$this->chat::find($chatId);
-        if($chatdata){
-            $chat = $this->chat::with('group')->find($chatId);
-            if($chat->group->created_by==env('CURRENT_USER_ID')){
-                return true;
-            }
-            else{
-                return false;
-            }
+        $chat = $this->chat::with('group')->find($chatId);
+        if($chat->group->created_by==env('CURRENT_USER_ID')){
+            return true;
         }
         else{
             return false;
