@@ -6,7 +6,6 @@ use App\Models\Chat\Chat;
 use App\Models\Chat\Group;
 use App\Models\Chat\Participant;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 
 class  ChatSource
 {
@@ -160,7 +159,7 @@ class  ChatSource
         }
     }
 
-    public function adduserToChatChat($payload){
+    public function addUserToChatChat($payload){
         try{
             if(isset($payload['chatId']) && isset($payload['userId']) ) {
                 $isGroup = $this->checkIsGroup($payload['chatId']);
@@ -174,6 +173,39 @@ class  ChatSource
                         }
                         else{
                             $this->result['message']='User already in chat';
+                        }
+                    }
+                    else{
+                        $this->result['message']='Permission error';
+                    }
+                }
+                else{
+                    $this->result['message']='Not a group';
+                }
+                return $this->result;
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+    public function removeUserFromChat($payload){
+        try{
+            if(isset($payload['chatId']) && isset($payload['userId']) ) {
+                $isGroup = $this->checkIsGroup($payload['chatId']);
+                if($isGroup){
+                    $permission=$this->checkPermissionForAddUserToChat($payload['chatId']);
+                    if($permission){
+                        $isUserExistInChat=$this->checkIsUserExistInChat($payload['chatId'],$payload['userId']);
+                        if($isUserExistInChat){
+                            $this->result['message']='User not present in chat';
+                        }
+                        else{
+                            $chatFind = Chat::find($payload['chatId']);
+                            $chatFind->users()->detach($payload['userId']);
+                            $this->result['message']='User removed from chat';
                         }
                     }
                     else{
