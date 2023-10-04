@@ -13,9 +13,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          DB_DATABASE: acc_communication
-          DB_USERNAME: postgres
-          DB_PASSWORD: 12345678
+          POSTGRES_DB: laravel
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
         options: >-
@@ -44,23 +44,26 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
 
+      - name: Wait for PostgreSQL to become ready
+        run: sleep 10
+
       - name: Run migrations
         env:
           DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
+          DB_HOST: postgres
           DB_PORT: 5432
-          DB_DATABASE: acc_communication
-          DB_USERNAME: postgres
-          DB_PASSWORD: 12345678
+          DB_DATABASE: laravel
+          DB_USERNAME: user
+          DB_PASSWORD: password
         run: php artisan migrate --force
 
       # Run tests
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
+          DB_HOST: postgres
           DB_PORT: 5432
-          DB_DATABASE: acc_communication
-          DB_USERNAME: postgres
-          DB_PASSWORD: 12345678
+          DB_DATABASE: laravel
+          DB_USERNAME: user
+          DB_PASSWORD: password
         run: vendor/bin/phpunit
