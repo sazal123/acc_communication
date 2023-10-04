@@ -11,7 +11,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:16
         env:
           DB_DATABASE: acc_communication
           DB_USERNAME: postgres
