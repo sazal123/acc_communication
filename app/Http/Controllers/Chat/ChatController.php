@@ -7,6 +7,8 @@ use App\Http\Requests\Chat\Chat\AddUserToChatRequest;
 use App\Http\Requests\Chat\Chat\CreateChatRequest;
 use App\Http\Requests\Chat\Chat\CreateGroupChatRequest;
 use App\Http\Requests\Chat\Chat\DeleteChatRequest;
+use App\Http\Requests\Chat\Chat\LeaveFromChatRequest;
+use App\Http\Requests\Chat\Chat\RemoveUserFromChatRequest;
 use App\Models\User;
 use App\Repositories\Chat\ChatRepository;
 use Illuminate\Http\Request;
@@ -162,7 +164,7 @@ class ChatController extends Controller
         return response()->json($this->result, $this->result['status']);
 
     }
-    public function removeUserFromChat(AddUserToChatRequest $request){
+    public function removeUserFromChat(RemoveUserFromChatRequest $request){
         try {
             $this->communication['slug'] = 'remove-user-from-chat';
             $this->communication['ip'] = $request->getClientIp();
@@ -173,6 +175,29 @@ class ChatController extends Controller
                 function () {
                     $this->result['status'] = 200;
                     $this->result['data'] = $this->chatRepository->removeUserFromChat($this->payload);
+                });
+            if (!$executed) {
+                throw new Exception('Too many requests..', 429);
+            }
+        } catch (Exception $e) {
+            $this->result['status'] = $e->getCode();
+            $this->result['message'] = $e->getMessage();
+        }
+        return response()->json($this->result, $this->result['status']);
+
+    }
+
+    public function leaveFromChat(LeaveFromChatRequest $request){
+        try {
+            $this->communication['slug'] = 'leave-from-chat';
+            $this->communication['ip'] = $request->getClientIp();
+            $this->payload = $this->trimAndStrip($request->all());
+            $executed = RateLimiter::attempt(
+                $this->communication['slug'] . ':' . $this->communication['ip'],
+                $perMinute = env('API_REQUESTS_PER_MINUTE'),
+                function () {
+                    $this->result['status'] = 200;
+                    $this->result['data'] = $this->chatRepository->leaveFromChat($this->payload);
                 });
             if (!$executed) {
                 throw new Exception('Too many requests..', 429);

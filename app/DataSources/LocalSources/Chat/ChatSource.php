@@ -225,6 +225,36 @@ class  ChatSource
         }
     }
 
+    public function leaveFromChat($payload){
+        try{
+            if(isset($payload['chatId']) ) {
+                $isGroup = $this->checkIsGroup($payload['chatId']);
+                if($isGroup){
+
+                    $isUserExistInChat=$this->checkIsUserExistInChat($payload['chatId'],env('CURRENT_USER_ID'));
+                    if($isUserExistInChat){
+                        $this->result['message']='User not present in chat';
+                    }
+                    else{
+                        $chatFind = Chat::find($payload['chatId']);
+                        $chatFind->users()->detach(env('CURRENT_USER_ID'));
+                        $this->result['message']='User leaved from chat';
+                    }
+
+                }
+                else{
+                    $this->result['message']='Not a group';
+                }
+                return $this->result;
+
+            }else{
+                throw new Exception('Write Exception has occurred.', 409);
+            }
+        }catch(Exception $e){
+            throw new Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
     public function checkIsGroup($chatId){
         $chat=$this->chat::find($chatId);
         if($chat){

@@ -10,4 +10,5 @@ interface ChatContract
     public function getChat();
     public function addUserToChat($payload);
     public function removeUserFromChat($payload);
+    public function leaveFromChat($payload);
 }

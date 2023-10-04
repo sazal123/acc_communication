@@ -10,4 +10,5 @@ Route::group(['namespace' => 'App\Http\Controllers\Chat'], function() {
     Route::get('/get-chat', 'ChatController@getChat');
     Route::post('/add-user-to-chat', 'ChatController@addUserToChat');
     Route::post('/remove-user-from-chat', 'ChatController@removeUserFromChat');
+    Route::post('/leave-from-chat', 'ChatController@leaveFromChat');
 });

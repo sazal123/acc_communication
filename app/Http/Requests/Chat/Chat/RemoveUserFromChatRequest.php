@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DeleteChatRequest extends FormRequest
+class RemoveUserFromChatRequest extends FormRequest
 {
     public function __construct()
     {
@@ -16,12 +16,14 @@ class DeleteChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'chatId' => 'required|integer|exists:acc_com_chats,id'
+            'userId' => 'required|integer|exists:users,id',
+            'chatId' => 'required|integer|exists:acc_com_chats,id',
         ];
     }
     public function messages(): array
     {
         return [
+            'userId.required' =>  'User Id  is required.',
             'chatId.required' =>  'Chat Id  is required.',
         ];
     }

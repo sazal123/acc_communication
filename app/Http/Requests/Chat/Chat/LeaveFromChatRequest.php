@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DeleteChatRequest extends FormRequest
+class LeaveFromChatRequest extends FormRequest
 {
     public function __construct()
     {
