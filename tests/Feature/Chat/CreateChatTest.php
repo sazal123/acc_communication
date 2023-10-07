@@ -16,10 +16,10 @@ class CreateChatTest extends TestCase
     public function user_can_create_a_chat_with_participant()
     {
 
-        $otherUsers = User::factory()->count(1)->create();
+        $otherUsers = User::factory()->count(10)->create();
         $userIds = $otherUsers->pluck('id')->toArray();
         $chatData = [
-            'participantId' => $userIds[0]
+            'participantId' => 7
         ];
         $response = $this->post("api/create-chat", $chatData);
         $response->assertStatus(200);
