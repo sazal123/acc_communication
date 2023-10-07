@@ -16,8 +16,7 @@ class CreateGroupChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'participantIds'   => 'required|array|min:2',
-            'participantIds.*' => 'exists:users,id',
+            'participantIds'   => 'required|array|min:2|exists:users,id',
             'group_name'       =>'required|string|max:100',
         ];
     }

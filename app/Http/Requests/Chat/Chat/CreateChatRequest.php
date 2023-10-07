@@ -16,8 +16,7 @@ class CreateChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'participantId' => 'required|integer',
-            'participantId.*' => 'exists:users,id'
+            'participantId' => 'required|integer|exists:users,id'
         ];
     }
     public function messages(): array
