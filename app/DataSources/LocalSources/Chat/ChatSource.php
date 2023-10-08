@@ -148,7 +148,14 @@ class  ChatSource
                     $query->where('user_id', $userId)
                         ->where('is_active', true);
                 })
-                ->with('group')
+                ->with(['group', 'participants' => function ($query) use ($userId) {
+                    // Exclude the current user from participants
+                    $query->where('user_id', '!=', $userId);
+                }])
+                ->with(['participants.user' => function ($query) {
+                    // Select the user ID and user name from participants
+                    $query->select('id', 'name');
+                }])
                 ->get()
                 ->toArray();
                 return $this->result;

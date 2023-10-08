@@ -7,9 +7,9 @@ use Tests\TestCase;
 
 class CreateGroupChatTest extends TestCase
 {
-
     /** @test */
-    public function user_can_create_group_chat_with_participant()
+
+    public function user_can_create_a_chat_with_participant()
     {
 
         $users = User::factory()->count(10)->create();
@@ -18,8 +18,8 @@ class CreateGroupChatTest extends TestCase
             'participantIds' => $usersIDs,
             'group_name' => 'test group'
         ];
-        $response = $this->post("api/create-group-chat", $chatData);
+        $response = $this->post("/api/create-group-chat", $chatData);
         $response->assertStatus(200);
-
+        return expect($response->getStatusCode())->toEqual(200);
     }
 }

@@ -18,7 +18,6 @@ class CreateChatTest extends TestCase
             'participantId' => $usersIDs[$random_id]
         ];
         $response = $this->post("api/create-chat", $chatData);
-        $response->assertStatus(200);
-
+        return expect($response->getStatusCode())->toEqual(200);
     }
 }

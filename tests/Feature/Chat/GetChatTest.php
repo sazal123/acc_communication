@@ -4,14 +4,11 @@ namespace Tests\Feature\Chat;
 
 use App\Models\Chat\Chat;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class GetChatTest extends TestCase
 {
-    use RefreshDatabase;
-
+    /** @test */
     public function user_can_retrieve_chat_list()
     {
         $user = User::factory()->create();
