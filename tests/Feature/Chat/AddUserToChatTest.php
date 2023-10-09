@@ -26,6 +26,14 @@ class AddUserToChatTest extends TestCase
                 'is_active' => 1,
             ]);
         }
+        Participant::create([
+            'chat_id' => $chat_id,
+            'user_id' => env('CURRENT_USER_ID'),
+            'uid' => env('UID'),
+            'udid' => env('UDID'),
+            'company_id' => env('COMPANY_ID'),
+            'is_active' => 1,
+        ]);
         Group::create([
             'chat_id' => $chat_id,
             'name' => 'test group name',
