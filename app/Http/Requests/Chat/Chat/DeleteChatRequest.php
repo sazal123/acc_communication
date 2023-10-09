@@ -16,7 +16,7 @@ class DeleteChatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'chatId' => 'required|integer|exists:acc_com_chats,id'
+            'chatId' => 'required|integer|exists:acc_com_chats,id|exists:acc_com_groups,chat_id'
         ];
     }
     public function messages(): array
