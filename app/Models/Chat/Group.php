@@ -12,6 +12,15 @@ class Group extends Model
     use SoftDeletes;
     use HasFactory;
     protected $table='acc_com_groups';
+    protected $fillable = [
+        'uid',
+        'udid',
+        'chat_id',
+        'company_id',
+        'is_active',
+        'created_by',
+        'name',
+    ];
 
     public function chat(): BelongsTo
     {

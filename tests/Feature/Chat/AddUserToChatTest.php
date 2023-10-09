@@ -8,15 +8,15 @@ use App\Models\Chat\Participant;
 use App\Models\User;
 use Tests\TestCase;
 
-class SendMessageTest extends TestCase
+class AddUserToChatTest extends TestCase
 {
     /** @test */
-    public function user_can_send_message_over_chat()
+    public function user_can_add_user_to_chat()
     {
-        $users = User::factory()->count(2)->create()->toArray();
+        $users = User::factory()->count(3)->create()->toArray();
         $chat = Chat::factory()->count(1)->create()->toArray();
         $chat_id=$chat[0]['id'];
-        foreach ($users as $participant) {
+        foreach (array_slice($users,0,2) as $participant) {
             Participant::create([
                 'chat_id' => $chat_id,
                 'user_id' => $participant['id'],
@@ -35,11 +35,11 @@ class SendMessageTest extends TestCase
             'is_active' => 1,
             'created_by' => env('CURRENT_USER_ID'),
         ]);
-        $messageData=[
+        $chatData=[
             'chatId' => $chat_id,
-            'content' => 'test message'
+            'userId' => $users[2]['id']
         ];
-        $response=$this->post("api/send-message", $messageData);
+        $response=$this->post("api/add-user-to-chat", $chatData);
         return expect($response->getStatusCode())->toEqual(200);
     }
 }

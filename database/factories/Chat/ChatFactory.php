@@ -21,7 +21,7 @@ class ChatFactory extends Factory
             'uid' => $this->faker->uuid,
             'udid' => $this->faker->uuid,
             'company_id' => 1,
-            'is_group' => false,
+            'is_group' => true,
             'is_active' => true,
         ];
     }

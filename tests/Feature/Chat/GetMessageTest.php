@@ -8,10 +8,10 @@ use App\Models\Chat\Participant;
 use App\Models\User;
 use Tests\TestCase;
 
-class SendMessageTest extends TestCase
+class GetMessageTest extends TestCase
 {
     /** @test */
-    public function user_can_send_message_over_chat()
+    public function user_can_get_message_by_chat_id()
     {
         $users = User::factory()->count(2)->create()->toArray();
         $chat = Chat::factory()->count(1)->create()->toArray();
@@ -39,7 +39,8 @@ class SendMessageTest extends TestCase
             'chatId' => $chat_id,
             'content' => 'test message'
         ];
-        $response=$this->post("api/send-message", $messageData);
+        $this->post("api/send-message", $messageData);
+        $response=$this->get("api/get-message?chatId=".$chat_id);
         return expect($response->getStatusCode())->toEqual(200);
     }
 }
