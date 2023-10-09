@@ -28,6 +28,7 @@ class  MessageSource
                 $this->message->uid=env('UID');
                 $this->message->udid=env('UDID');
                 $this->message->company_id=env('COMPANY_ID');
+                $this->message->is_active=true;
                 $chat=Chat::find($payload['chatId']);
                 if($chat){
                     $user=User::find(env('CURRENT_USER_ID'));
