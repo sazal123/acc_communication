@@ -8,7 +8,7 @@ use App\Models\Chat\Participant;
 use App\Models\User;
 use Tests\TestCase;
 
-class RemoveUserFromChatTest extends TestCase
+class LeaveFromChatTest extends TestCase
 {
     /** @test */
     public function user_can_remove_user_from_chat()
@@ -45,9 +45,8 @@ class RemoveUserFromChatTest extends TestCase
         ]);
         $chatData=[
             'chatId' => $chat_id,
-            'userId' => $users[2]['id']
         ];
-        $response=$this->post("api/remove-user-from-chat", $chatData);
+        $response=$this->post("api/leave-from-chat", $chatData);
         return expect($response->getStatusCode())->toEqual(200);
     }
 }
