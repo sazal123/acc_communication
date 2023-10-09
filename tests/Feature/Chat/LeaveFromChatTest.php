@@ -11,7 +11,7 @@ use Tests\TestCase;
 class LeaveFromChatTest extends TestCase
 {
     /** @test */
-    public function user_can_remove_user_from_chat()
+    public function user_can_leave_from_chat()
     {
         $users = User::factory()->count(3)->create()->toArray();
         $chat = Chat::factory()->count(1)->create()->toArray();
