@@ -15,7 +15,11 @@ class Participant extends Model
     protected $table='acc_com_participants';
     protected $fillable = [
         'uid',
-        'udid'
+        'udid',
+        'chat_id',
+        'user_id',
+        'company_id',
+        'is_active',
     ];
 
     public function chat(): BelongsTo

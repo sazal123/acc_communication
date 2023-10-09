@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Chat;
 
-use App\Models\Chat\Chat;
 use App\Models\User;
 use Tests\TestCase;
 
